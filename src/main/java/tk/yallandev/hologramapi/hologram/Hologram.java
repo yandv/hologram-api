@@ -4,10 +4,16 @@ import java.util.Collection;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 
 public interface Hologram {
 	
 	void spawn();
+	
+	void remove();
 	
 	boolean isSpawned();
 	
@@ -99,4 +105,67 @@ public interface Hologram {
 	 */
 	
 	Location getLocation();
+	
+	/**
+	 * 
+	 * Show Hologram for player
+	 * 
+	 * @param player
+	 */
+	
+	void show(Player player);
+	
+	/**
+	 * 
+	 * Hide Hologram for player
+	 * 
+	 * @param player
+	 */
+	
+	void hide(Player player);
+	
+	/**
+	 * 
+	 * Return all viewers
+	 * 
+	 * @return
+	 */
+	
+	Collection<Player> getViewers();
+	
+	/**
+	 * 
+	 * Set the TouchHandler of the Hologram
+	 * 
+	 * @param touchHandler
+	 */
+	
+	void setTouchHandler(TouchHandler touchHandler);
+	
+	/**
+	 * Return if have a TouchHandler
+	 * 
+	 * @return
+	 */
+	
+	boolean hasTouchHandler();
+	
+	/**
+	 * 
+	 * Return the TouchHandler, or null
+	 * 
+	 * @return
+	 */
+	
+	TouchHandler getTouchHandler();
+	
+	/**
+	 * 
+	 * Compare the ArmorStand entity of the Hologram with
+	 * 
+	 * @param rightClicked
+	 * @return
+	 */
+
+	boolean compareEntity(Entity rightClicked);
 }

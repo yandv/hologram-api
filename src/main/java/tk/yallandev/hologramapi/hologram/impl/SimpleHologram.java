@@ -1,24 +1,19 @@
 package tk.yallandev.hologramapi.hologram.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.injector.PacketConstructor;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_8_R3.World;
 import tk.yallandev.hologramapi.hologram.Hologram;
-import tk.yallandev.hologramapi.packet.PacketController;
+import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 
 public class SimpleHologram implements Hologram {
 
@@ -26,71 +21,63 @@ public class SimpleHologram implements Hologram {
 
 	private String displayName;
 	private Location location;
+
+	private ArmorStand armorStand;
+	private List<Hologram> hologramList;
 	
-	private EntityArmorStand armorStand;
+	private TouchHandler touchHandler;
+	
+	private boolean spawned;
 
 	public SimpleHologram(String displayName, Location location) {
-		
 		this.displayName = displayName;
 		this.location = location;
-		
-		armorStand = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle());
-		
-		armorStand.setInvisible(true);
-		armorStand.setGravity(false);
-		armorStand.setCustomName(displayName);
-		armorStand.setCustomNameVisible(isCustomNameVisible());
-		
-		
-		
-//		PacketPlayOutNamedEntitySpawn asdasd = new PacketPlayOutSpawnEntityLiving(arg0)
-		
-		PacketContainer packetContainer = ProtocolLibrary.getProtocolManager()
-				.createPacketConstructor(PacketType.Play.Server.SPAWN_ENTITY_LIVING, armorStand).createPacket(armorStand);
-		
-	    double x = location.getX();
-	    double y = location.getY();
-	    double z = location.getZ();
-	    
-	    if (MINECRAFT_VERSION < 9) {
-	      packetContainer.getIntegers()
-	        .write(1, Integer.valueOf((int)Math.floor(x * 32.0D)))
-	        .write(2, Integer.valueOf((int)Math.floor(y * 32.0D)))
-	        .write(3, Integer.valueOf((int)Math.floor(z * 32.0D)));
-	    } else {
-	      packetContainer.getDoubles()
-	        .write(0, Double.valueOf(x))
-	        .write(1, Double.valueOf(y))
-	        .write(2, Double.valueOf(z));
-	    } 
-	    
-	    packetContainer.getBytes()
-	      .write(0, Byte.valueOf((byte)(int)(location.getYaw() * 256.0F / 360.0F)))
-	      .write(1, Byte.valueOf((byte)(int)(location.getPitch() * 256.0F / 360.0F)));
-	    if (MINECRAFT_VERSION < 15)
-	      packetContainer.getDataWatcherModifier().write(0, new WrappedDataWatcher()); 
-		
-//		packetContainer.get
+		this.hologramList = new ArrayList<>();
 	}
 
 	@Override
 	public void spawn() {
-
+		spawned = true;
+		try {
+			armorStand = createArmorStand();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		hologramList.forEach(Hologram::spawn);
+	}
+	
+	@Override
+	public void remove() {
+		spawned = false;
+		
+		if (armorStand != null)
+			try {
+				armorStand = createArmorStand();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+		hologramList.forEach(Hologram::remove);
 	}
 
 	@Override
 	public boolean isSpawned() {
-		return false;
+		return spawned;
 	}
 
 	@Override
 	public void setDisplayName(String displayName) {
-
+		this.displayName = displayName;
+		
+		if (armorStand != null) {
+			armorStand.setCustomName(displayName);
+			armorStand.setCustomNameVisible(isCustomNameVisible());
+		}
 	}
 
 	@Override
 	public boolean hasDisplayName() {
-		return false;
+		return isCustomNameVisible();
 	}
 
 	@Override
@@ -100,32 +87,124 @@ public class SimpleHologram implements Hologram {
 
 	@Override
 	public String getDisplayName() {
-		return null;
+		return displayName;
 	}
 
 	@Override
 	public void addLine(String line) {
-
+		SimpleHologram hologram = new SimpleHologram(line, getLocation().clone().subtract(0, (getLines().size() + 1) * 0.25, 0));
+		
+		hologram.setTouchHandler(getTouchHandler());
+		
+		if (isSpawned())
+			hologram.spawn();
+		
+		hologramList.add(hologram);
 	}
 
 	@Override
 	public void addLine(Hologram hologram) {
-
+		if (isSpawned()) {
+			hologram.teleport(hologram.getLocation().subtract(0, (getLines().size() + 1) * 0.25, 0));
+			hologram.spawn();
+		}
+		
+		if (!hologram.hasTouchHandler())
+			hologram.setTouchHandler(getTouchHandler());
+		
+		hologramList.add(hologram);
 	}
 
 	@Override
 	public Collection<Hologram> getLines() {
-		return null;
+		return hologramList;
 	}
 
 	@Override
 	public void teleport(Location location) {
-
+		this.location = location;
+		
+		if (armorStand != null) {
+			armorStand.remove();
+			
+			try {
+				armorStand = createArmorStand();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		hologramList.forEach(hologram -> hologram.teleport(location));
 	}
 
 	@Override
 	public Location getLocation() {
 		return location;
+	}
+
+	/**
+	 * @deprecated The SimpleHologram doesnt support show
+	 */
+	
+	@Override
+	public void show(Player player) {
+		
+	}
+	
+	/**
+	 * @deprecated The SimpleHologram doesnt support hide
+	 */
+
+	@Override
+	public void hide(Player player) {
+		
+	}
+	
+	/**
+	 * @deprecated The SimpleHologram doesnt support viewers
+	 */
+
+	@Override
+	public Collection<Player> getViewers() {
+		return new ArrayList<>();
+	}
+	
+	private ArmorStand createArmorStand() throws Exception {
+		
+		if (!location.getChunk().isLoaded()) {
+			if (!location.getChunk().load(true)) {
+				throw new Exception("Could not load the chunk " + location.getX() + ", " + location.getY() + ", " + location.getZ());
+			}
+		}
+		
+		ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
+
+		armorStand.setVisible(false);
+		armorStand.setGravity(false);
+		armorStand.setCustomName(displayName);
+		armorStand.setCustomNameVisible(true);
+		
+		return armorStand;
+	}
+
+	@Override
+	public void setTouchHandler(TouchHandler touchHandler) {
+		this.touchHandler = touchHandler;
+	}
+	
+	@Override
+	public boolean hasTouchHandler() {
+		return touchHandler != null;
+	}
+	
+	@Override
+	public TouchHandler getTouchHandler() {
+		return touchHandler;
+	}
+
+	@Override
+	public boolean compareEntity(Entity rightClicked) {
+		return rightClicked == armorStand;
 	}
 
 }
