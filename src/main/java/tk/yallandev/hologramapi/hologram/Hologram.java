@@ -1,5 +1,7 @@
 package tk.yallandev.hologramapi.hologram;
 
+import java.util.Collection;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -44,6 +46,33 @@ public interface Hologram {
 	 */
 	
 	String getDisplayName();
+	
+	/**
+	 * 
+	 * Add a line in this Hologram
+	 * 
+	 * @param hologram
+	 */
+	
+	public void addLine(String line);
+	
+	/**
+	 * 
+	 * Add a line in this Hologram
+	 * 
+	 * @param hologram
+	 */
+	
+	public void addLine(Hologram hologram);
+	
+	/**
+	 * 
+	 * Return all lines the hologram
+	 * 
+	 * @return collection
+	 */
+	
+	Collection<Hologram> getLines();
 	
 	/**
 	 * 

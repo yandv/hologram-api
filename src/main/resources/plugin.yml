@@ -1,0 +1,6 @@
+name: Hologram
+main: tk.yallandev.hologramapi.HologramMain
+version: 1.0
+author: yandv
+depend: [ProtocolLib]
+load: STARTUP

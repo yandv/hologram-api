@@ -24,7 +24,6 @@
 		</repository>
 	</repositories>
 
-
 	<dependencies>
 
 		<dependency>
@@ -58,6 +57,15 @@
 			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.8.8-R0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/PaperSpigot.jar</systemPath>
+		</dependency>
+
 
 	</dependencies>
 </project>
