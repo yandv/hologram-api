@@ -2,7 +2,6 @@ package tk.yallandev.hologramapi.hologram.handler;
 
 import org.bukkit.entity.Player;
 
-import lombok.NonNull;
 import tk.yallandev.hologramapi.hologram.Hologram;
 
 /**
@@ -15,7 +14,7 @@ import tk.yallandev.hologramapi.hologram.Hologram;
 
 public interface TouchHandler {
 
-	public void onTouch(@NonNull Hologram hologram, @NonNull Player player, TouchType touchType);
+	public void onTouch(Hologram hologram, Player player, TouchType touchType);
 	
 	public enum TouchType {
 		

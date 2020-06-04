@@ -2,7 +2,6 @@ package tk.yallandev.hologramapi.hologram.handler;
 
 import org.bukkit.entity.Player;
 
-import lombok.NonNull;
 import tk.yallandev.hologramapi.hologram.Hologram;
 
 
@@ -18,6 +17,6 @@ import tk.yallandev.hologramapi.hologram.Hologram;
 
 public interface ViewHandler {
 	
-	public void onView(@NonNull Hologram hologram, @NonNull Player player);
+	public void onView(Hologram hologram, Player player);
 
 }
