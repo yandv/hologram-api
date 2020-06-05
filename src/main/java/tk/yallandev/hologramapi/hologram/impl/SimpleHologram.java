@@ -10,14 +10,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import com.comphenix.protocol.ProtocolLibrary;
-
 import tk.yallandev.hologramapi.hologram.Hologram;
 import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 
 public class SimpleHologram implements Hologram {
-
-	public static final int MINECRAFT_VERSION = ProtocolLibrary.getProtocolManager().getMinecraftVersion().getMinor();
 
 	private String displayName;
 	private Location location;
