@@ -27,7 +27,13 @@ public class HologramController {
 	}
 
 	public void registerHologram(Hologram hologram) {
-		hologramList.add(hologram);
+		if (!hologramList.contains(hologram))
+			hologramList.add(hologram);
+	}
+
+	public void unregisterHologram(Hologram hologram) {
+		if (hologramList.contains(hologram))
+			hologramList.remove(hologram);
 	}
 
 	public Hologram createHologram(String displayName, Location location, Class<? extends Hologram> clazz) {
