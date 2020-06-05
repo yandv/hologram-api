@@ -11,27 +11,28 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import tk.yallandev.hologramapi.hologram.Hologram;
+import tk.yallandev.hologramapi.hologram.HologramBuilder;
 import tk.yallandev.hologramapi.listener.HologramListener;
 
 @Getter
 public class HologramController {
-	
+
 	private JavaPlugin javaPlugin;
 	private List<Hologram> hologramList;
-	
+
 	public HologramController(JavaPlugin javaPlugin) {
 		this.javaPlugin = javaPlugin;
 		this.hologramList = new ArrayList<>();
 		Bukkit.getPluginManager().registerEvents(new HologramListener(this), javaPlugin);
 	}
-	
+
 	public void registerHologram(Hologram hologram) {
 		hologramList.add(hologram);
 	}
-	
+
 	public Hologram createHologram(String displayName, Location location, Class<? extends Hologram> clazz) {
 		Hologram hologram = null;
-		
+
 		try {
 			hologram = clazz.getConstructor(String.class, Location.class).newInstance(displayName, location);
 			hologram.spawn();
@@ -40,20 +41,29 @@ public class HologramController {
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
-		
+
 		return hologram;
 	}
-	
+
+	public Hologram createHologram(HologramBuilder hologramBuilder) {
+		Hologram hologram = hologramBuilder.build();
+
+		hologram.spawn();
+		registerHologram(hologram);
+
+		return hologram;
+	}
+
 	public static HologramController createInstance(JavaPlugin javaPlugin) {
 		return new HologramController(javaPlugin);
 	}
-	
+
 	public void handleDisable() {
 		for (Hologram hologram : hologramList)
 			hologram.remove();
-		
+
 		for (ArmorStand armor : Bukkit.getWorld("world").getEntitiesByClass(ArmorStand.class))
 			armor.remove();
 	}
-	
+
 }

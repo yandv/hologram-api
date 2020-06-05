@@ -34,11 +34,13 @@ public class SimpleHologram implements Hologram {
 	@Override
 	public void spawn() {
 		spawned = true;
+		
 		try {
 			armorStand = createArmorStand();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		hologramList.forEach(Hologram::spawn);
 	}
 	
