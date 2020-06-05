@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 import tk.yallandev.hologramapi.hologram.handler.ViewHandler;
 import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
@@ -31,6 +32,10 @@ public class HologramBuilder {
 	private ViewHandler viewHandler;
 	
 	private Class<? extends Hologram> clazz;
+	
+	private HologramController hologramController;
+	private boolean register;
+	private boolean spawn;
 	
 	public HologramBuilder(String displayName) {
 		this.displayName = displayName;
@@ -66,6 +71,26 @@ public class HologramBuilder {
 		return this;
 	}
 	
+	public HologramBuilder setHologramController(HologramController hologramController) {
+		this.hologramController = hologramController;
+		return this;
+	}
+	
+	public HologramBuilder setRegister(boolean register) {
+		this.register = register;
+		return this;
+	}
+	
+	public HologramBuilder setSpawn(boolean spawn) {
+		this.spawn = spawn;
+		return this;
+	}
+	
+	public HologramBuilder setPacketHologram() {
+		this.clazz = Hologram.getServerPacketHologram();
+		return this;
+	}
+	
 	public Hologram build() {
 		Hologram hologram = null;
 		
@@ -87,6 +112,16 @@ public class HologramBuilder {
 		
 		if (touchHandler != null)
 			hologram.setTouchHandler(touchHandler);
+		
+		if (register) {
+			if (hologramController == null)
+				throw new IllegalStateException("");
+			else
+				hologramController.registerHologram(hologram);
+		}
+		
+		if (spawn)
+			hologram.spawn();
 		
 //TODO make VIEW		if (viewHandler != null)
 		

@@ -2,10 +2,16 @@ package tk.yallandev.hologramapi.listener;
 
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
@@ -24,17 +30,24 @@ public class HologramListener implements Listener {
 	@EventHandler
 	public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
 		if (event.getRightClicked().getType() == EntityType.ARMOR_STAND) {
-
-			event.setCancelled(true);
-
 			for (Hologram hologram : controller.getHologramList().stream()
 					.filter(hologram -> hologram.hasTouchHandler()).collect(Collectors.toList())) {
-
 				if (hologram.compareEntity(event.getRightClicked())) {
 					if (hologram.hasTouchHandler())
 						hologram.getTouchHandler().onTouch(hologram, event.getPlayer(), TouchType.RIGHT);
 				}
 			}
+			
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
+		ArmorStand armorStand = e.getRightClicked();
+
+		if (!armorStand.isVisible()) {
+			e.setCancelled(true);
 		}
 	}
 
@@ -53,6 +66,21 @@ public class HologramListener implements Listener {
 			if (hologram.isSpawned())
 				if (hologram.getLocation().getChunk().equals(event.getChunk()))
 					event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onPluginEnable(PluginEnableEvent event) {
+		if (event.getPlugin() == controller.getJavaPlugin())
+			for (World world : Bukkit.getWorlds())
+				for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class))
+					armorStand.remove();
+	}
+
+	@EventHandler
+	public void onPluginDisable(PluginDisableEvent event) {
+		if (event.getPlugin() == controller.getJavaPlugin())
+			for (Hologram hologram : controller.getHologramList())
+				hologram.remove();
 	}
 
 }

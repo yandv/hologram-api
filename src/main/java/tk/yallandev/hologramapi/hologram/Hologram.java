@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
+import tk.yallandev.hologramapi.hologram.impl.packet.PacketHologram;
 
 public interface Hologram {
 	
@@ -168,4 +169,8 @@ public interface Hologram {
 	 */
 
 	boolean compareEntity(Entity rightClicked);
+	
+	public static Class<? extends PacketHologram> getServerPacketHologram() {
+		return tk.yallandev.hologramapi.hologram.impl.packet.v1_8_R3.PacketHologram.class;
+	}
 }

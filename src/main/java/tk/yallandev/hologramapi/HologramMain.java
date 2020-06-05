@@ -6,42 +6,83 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
+
 import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.hologramapi.hologram.Hologram;
 import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
+import tk.yallandev.nms.packet.PacketController;
+import tk.yallandev.nms.packet.PacketHandler;
+import tk.yallandev.nms.packet.wrapper.AbstractPacket;
+import tk.yallandev.nms.packet.wrapper.WrapperPlayServerSpawnEntity;
+import tk.yallandev.nms.packet.wrapper.WrapperPlayServerSpawnEntityLiving;
 
 public class HologramMain extends JavaPlugin {
-	
-	private HologramController controller;
-	
+
+	private PacketController packetController;
+	private HologramController hologramController;
+
 	@Override
 	public void onEnable() {
-		controller = HologramController.createInstance(this);
-		
+		hologramController = HologramController.createInstance(this);
+
+		packetController = new PacketController(this);
+		packetController.registerHandler(new PacketHandler() {
+
+			@Override
+			public boolean onPacketReceive(AbstractPacket abstractPacket, PacketType packetType,
+					PacketEvent packetEvent) {
+
+				if (abstractPacket instanceof WrapperPlayServerSpawnEntity) {
+					WrapperPlayServerSpawnEntity packet = (WrapperPlayServerSpawnEntity) abstractPacket;
+
+					System.out.println("ServerSpawnEntity");
+
+				} else if (abstractPacket instanceof WrapperPlayServerSpawnEntityLiving) {
+					WrapperPlayServerSpawnEntityLiving packet = (WrapperPlayServerSpawnEntityLiving) abstractPacket;
+
+				}
+
+				return false;
+			}
+
+			@Override
+			public boolean onPacketSend(AbstractPacket abstractPacket, PacketType packetType, PacketEvent packetEvent) {
+
+				if (abstractPacket instanceof WrapperPlayServerSpawnEntity) {
+					WrapperPlayServerSpawnEntity packet = (WrapperPlayServerSpawnEntity) abstractPacket;
+
+				} else if (abstractPacket instanceof WrapperPlayServerSpawnEntityLiving) {
+					WrapperPlayServerSpawnEntityLiving packet = (WrapperPlayServerSpawnEntityLiving) abstractPacket;
+				}
+
+				return false;
+			}
+
+		});
+
 		new BukkitRunnable() {
-			
+
 			@Override
 			public void run() {
-				Hologram hologram = controller.createHologram("caralho", new Location(Bukkit.getWorlds().get(0), 0, 120, 0), SimpleHologram.class);
+				Hologram hologram = hologramController.createHologram("caralho",
+						new Location(Bukkit.getWorlds().get(0), 0, 120, 0), SimpleHologram.class);
 
 				hologram.setTouchHandler(new TouchHandler() {
-					
+
 					@Override
 					public void onTouch(Hologram hologram, Player player, TouchType touchType) {
 						player.sendMessage("eae");
 					}
 				});
-				
+
 				hologram.addLine("to so testando tlg");
-				hologram.addLine(controller.createHologram("otroteste", new Location(Bukkit.getWorlds().get(0), 0, 120, 0), SimpleHologram.class));
+				hologram.addLine(hologramController.createHologram("otroteste",
+						new Location(Bukkit.getWorlds().get(0), 0, 120, 0), SimpleHologram.class));
 			}
 		}.runTask(this);
 	}
-	
-	@Override
-	public void onDisable() {
-		controller.handleDisable();
-	}
-	
+
 }

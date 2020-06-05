@@ -33,6 +33,9 @@ public class SimpleHologram implements Hologram {
 
 	@Override
 	public void spawn() {
+		if (isSpawned())
+			return;
+		
 		spawned = true;
 		
 		try {
@@ -49,11 +52,7 @@ public class SimpleHologram implements Hologram {
 		spawned = false;
 		
 		if (armorStand != null)
-			try {
-				armorStand = createArmorStand();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			armorStand.remove();
 		
 		hologramList.forEach(Hologram::remove);
 	}
@@ -180,7 +179,8 @@ public class SimpleHologram implements Hologram {
 		armorStand.setVisible(false);
 		armorStand.setGravity(false);
 		armorStand.setCustomName(displayName);
-		armorStand.setCustomNameVisible(true);
+		armorStand.setCustomNameVisible(isCustomNameVisible());
+		armorStand.setCanPickupItems(false);
 		
 		return armorStand;
 	}

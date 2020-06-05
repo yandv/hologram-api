@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
@@ -62,14 +61,6 @@ public class HologramController {
 
 	public static HologramController createInstance(JavaPlugin javaPlugin) {
 		return new HologramController(javaPlugin);
-	}
-
-	public void handleDisable() {
-		for (Hologram hologram : hologramList)
-			hologram.remove();
-
-		for (ArmorStand armor : Bukkit.getWorld("world").getEntitiesByClass(ArmorStand.class))
-			armor.remove();
 	}
 
 }
