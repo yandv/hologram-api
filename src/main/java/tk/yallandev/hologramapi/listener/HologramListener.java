@@ -11,9 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.hologramapi.hologram.Hologram;
@@ -25,6 +25,16 @@ public class HologramListener implements Listener {
 
 	public HologramListener(HologramController controller) {
 		this.controller = controller;
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				for (World world : Bukkit.getWorlds())
+					for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class))
+						armorStand.remove();
+			}
+		}.runTask(controller.getJavaPlugin());
 	}
 
 	@EventHandler
@@ -66,14 +76,6 @@ public class HologramListener implements Listener {
 			if (hologram.isSpawned())
 				if (hologram.getLocation().getChunk().equals(event.getChunk()))
 					event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onPluginEnable(PluginEnableEvent event) {
-		if (event.getPlugin() == controller.getJavaPlugin())
-			for (World world : Bukkit.getWorlds())
-				for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class))
-					armorStand.remove();
 	}
 
 	@EventHandler

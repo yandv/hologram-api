@@ -16,8 +16,6 @@ import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
 import tk.yallandev.nms.packet.PacketController;
 import tk.yallandev.nms.packet.PacketHandler;
 import tk.yallandev.nms.packet.wrapper.AbstractPacket;
-import tk.yallandev.nms.packet.wrapper.WrapperPlayServerSpawnEntity;
-import tk.yallandev.nms.packet.wrapper.WrapperPlayServerSpawnEntityLiving;
 
 public class HologramMain extends JavaPlugin {
 
@@ -35,28 +33,11 @@ public class HologramMain extends JavaPlugin {
 			public boolean onPacketReceive(AbstractPacket abstractPacket, PacketType packetType,
 					PacketEvent packetEvent) {
 
-				if (abstractPacket instanceof WrapperPlayServerSpawnEntity) {
-					WrapperPlayServerSpawnEntity packet = (WrapperPlayServerSpawnEntity) abstractPacket;
-
-					System.out.println("ServerSpawnEntity");
-
-				} else if (abstractPacket instanceof WrapperPlayServerSpawnEntityLiving) {
-					WrapperPlayServerSpawnEntityLiving packet = (WrapperPlayServerSpawnEntityLiving) abstractPacket;
-
-				}
-
 				return false;
 			}
 
 			@Override
 			public boolean onPacketSend(AbstractPacket abstractPacket, PacketType packetType, PacketEvent packetEvent) {
-
-				if (abstractPacket instanceof WrapperPlayServerSpawnEntity) {
-					WrapperPlayServerSpawnEntity packet = (WrapperPlayServerSpawnEntity) abstractPacket;
-
-				} else if (abstractPacket instanceof WrapperPlayServerSpawnEntityLiving) {
-					WrapperPlayServerSpawnEntityLiving packet = (WrapperPlayServerSpawnEntityLiving) abstractPacket;
-				}
 
 				return false;
 			}

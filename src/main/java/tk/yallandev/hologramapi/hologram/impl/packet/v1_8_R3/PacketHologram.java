@@ -103,8 +103,7 @@ public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packe
 
 	@Override
 	public Collection<Hologram> getLines() {
-		// TODO Auto-generated method stub
-		return null;
+		return hologramList;
 	}
 
 	@Override
@@ -115,8 +114,7 @@ public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packe
 
 	@Override
 	public Location getLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		return location;
 	}
 
 	@Override
@@ -173,7 +171,7 @@ public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packe
 	}
 
 	private void broadcast(net.minecraft.server.v1_8_R3.Packet<net.minecraft.server.v1_8_R3.PacketListenerPlayOut> packet) {
-		Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet));
+		Bukkit.getOnlinePlayers().forEach(player -> sendPacket(player, packet));
 	}
 	
 }
