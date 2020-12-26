@@ -10,8 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
+import tk.yallandev.hologramapi.handler.TouchHandler;
 import tk.yallandev.hologramapi.hologram.Hologram;
-import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 
 public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packet.PacketHologram {
 	
@@ -80,25 +80,22 @@ public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packe
 
 	@Override
 	public boolean isCustomNameVisible() {
-		return displayName.isEmpty() || displayName == null ? false : true;
+		return !(displayName == null && displayName.isEmpty());
 	}
 
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return displayName;
 	}
 
 	@Override
-	public void addLine(String line) {
-		// TODO Auto-generated method stub
-		
+	public Hologram addLine(String line) {
+		return this;
 	}
 
 	@Override
-	public void addLine(Hologram hologram) {
-		// TODO Auto-generated method stub
-		
+	public Hologram addLine(Hologram hologram) {
+		return this;
 	}
 
 	@Override
@@ -108,7 +105,6 @@ public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packe
 
 	@Override
 	public void teleport(Location location) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -152,7 +148,6 @@ public class PacketHologram extends tk.yallandev.hologramapi.hologram.impl.packe
 
 	@Override
 	public boolean compareEntity(Entity rightClicked) {
-		System.out.println("TA fazendo MERDA");
 		return false;
 	}
 	

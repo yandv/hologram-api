@@ -10,8 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import tk.yallandev.hologramapi.handler.TouchHandler;
 import tk.yallandev.hologramapi.hologram.Hologram;
-import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
 
 public class SimpleHologram implements Hologram {
 
@@ -20,9 +20,9 @@ public class SimpleHologram implements Hologram {
 
 	private ArmorStand armorStand;
 	private List<Hologram> hologramList;
-	
+
 	private TouchHandler touchHandler;
-	
+
 	private boolean spawned;
 
 	public SimpleHologram(String displayName, Location location) {
@@ -35,25 +35,28 @@ public class SimpleHologram implements Hologram {
 	public void spawn() {
 		if (isSpawned())
 			return;
-		
+
 		spawned = true;
-		
+
+		if (!location.getChunk().isLoaded())
+			location.getChunk().load();
+
 		try {
 			armorStand = createArmorStand();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		hologramList.forEach(Hologram::spawn);
 	}
-	
+
 	@Override
 	public void remove() {
 		spawned = false;
-		
+
 		if (armorStand != null)
 			armorStand.remove();
-		
+
 		hologramList.forEach(Hologram::remove);
 	}
 
@@ -65,7 +68,7 @@ public class SimpleHologram implements Hologram {
 	@Override
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-		
+
 		if (armorStand != null) {
 			armorStand.setCustomName(displayName);
 			armorStand.setCustomNameVisible(isCustomNameVisible());
@@ -79,7 +82,7 @@ public class SimpleHologram implements Hologram {
 
 	@Override
 	public boolean isCustomNameVisible() {
-		return displayName.isEmpty() || displayName == null ? false : true;
+		return !(displayName == null && displayName.isEmpty());
 	}
 
 	@Override
@@ -88,28 +91,31 @@ public class SimpleHologram implements Hologram {
 	}
 
 	@Override
-	public void addLine(String line) {
-		SimpleHologram hologram = new SimpleHologram(line, getLocation().clone().subtract(0, (getLines().size() + 1) * 0.25, 0));
-		
+	public Hologram addLine(String line) {
+		SimpleHologram hologram = new SimpleHologram(line,
+				getLocation().clone().subtract(0, (getLines().size() + 1) * 0.25, 0));
+
 		hologram.setTouchHandler(getTouchHandler());
-		
+
 		if (isSpawned())
 			hologram.spawn();
-		
+
 		hologramList.add(hologram);
+		return hologram;
 	}
 
 	@Override
-	public void addLine(Hologram hologram) {
+	public Hologram addLine(Hologram hologram) {
 		if (isSpawned()) {
 			hologram.teleport(hologram.getLocation().subtract(0, (getLines().size() + 1) * 0.25, 0));
 			hologram.spawn();
 		}
-		
+
 		if (!hologram.hasTouchHandler())
 			hologram.setTouchHandler(getTouchHandler());
-		
+
 		hologramList.add(hologram);
+		return hologram;
 	}
 
 	@Override
@@ -120,17 +126,17 @@ public class SimpleHologram implements Hologram {
 	@Override
 	public void teleport(Location location) {
 		this.location = location;
-		
+
 		if (armorStand != null) {
 			armorStand.remove();
-			
+
 			try {
 				armorStand = createArmorStand();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		hologramList.forEach(hologram -> hologram.teleport(location));
 	}
 
@@ -142,21 +148,21 @@ public class SimpleHologram implements Hologram {
 	/**
 	 * @deprecated The SimpleHologram doesnt support show
 	 */
-	
+
 	@Override
 	public void show(Player player) {
-		
+
 	}
-	
+
 	/**
 	 * @deprecated The SimpleHologram doesnt support hide
 	 */
 
 	@Override
 	public void hide(Player player) {
-		
+
 	}
-	
+
 	/**
 	 * @deprecated The SimpleHologram doesnt support viewers
 	 */
@@ -165,15 +171,16 @@ public class SimpleHologram implements Hologram {
 	public Collection<Player> getViewers() {
 		return new ArrayList<>();
 	}
-	
+
 	private ArmorStand createArmorStand() throws Exception {
-		
+
 		if (!location.getChunk().isLoaded()) {
 			if (!location.getChunk().load(true)) {
-				throw new Exception("Could not load the chunk " + location.getX() + ", " + location.getY() + ", " + location.getZ());
+				throw new Exception("Could not load the chunk " + location.getX() + ", " + location.getY() + ", "
+						+ location.getZ());
 			}
 		}
-		
+
 		ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
 
 		armorStand.setVisible(false);
@@ -181,7 +188,6 @@ public class SimpleHologram implements Hologram {
 		armorStand.setCustomName(displayName);
 		armorStand.setCustomNameVisible(isCustomNameVisible());
 		armorStand.setCanPickupItems(false);
-		
 		return armorStand;
 	}
 
@@ -189,12 +195,12 @@ public class SimpleHologram implements Hologram {
 	public void setTouchHandler(TouchHandler touchHandler) {
 		this.touchHandler = touchHandler;
 	}
-	
+
 	@Override
 	public boolean hasTouchHandler() {
 		return touchHandler != null;
 	}
-	
+
 	@Override
 	public TouchHandler getTouchHandler() {
 		return touchHandler;

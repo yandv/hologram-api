@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
@@ -18,11 +19,13 @@ public class HologramController {
 
 	private JavaPlugin javaPlugin;
 	private List<Hologram> hologramList;
+	
+	private Listener listener = new HologramListener(this);
 
 	public HologramController(JavaPlugin javaPlugin) {
 		this.javaPlugin = javaPlugin;
 		this.hologramList = new ArrayList<>();
-		Bukkit.getPluginManager().registerEvents(new HologramListener(this), javaPlugin);
+		Bukkit.getPluginManager().registerEvents(listener, javaPlugin);
 	}
 
 	public void registerHologram(Hologram hologram) {

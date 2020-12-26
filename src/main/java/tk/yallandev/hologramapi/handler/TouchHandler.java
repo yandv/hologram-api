@@ -1,4 +1,4 @@
-package tk.yallandev.hologramapi.hologram.handler;
+package tk.yallandev.hologramapi.handler;
 
 import org.bukkit.entity.Player;
 

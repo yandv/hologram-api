@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,11 +14,11 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.event.world.WorldLoadEvent;
 
 import tk.yallandev.hologramapi.controller.HologramController;
+import tk.yallandev.hologramapi.handler.TouchHandler.TouchType;
 import tk.yallandev.hologramapi.hologram.Hologram;
-import tk.yallandev.hologramapi.hologram.handler.TouchHandler.TouchType;
 
 public class HologramListener implements Listener {
 
@@ -25,16 +26,11 @@ public class HologramListener implements Listener {
 
 	public HologramListener(HologramController controller) {
 		this.controller = controller;
-		
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				for (World world : Bukkit.getWorlds())
-					for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class))
-						armorStand.remove();
-			}
-		}.runTask(controller.getJavaPlugin());
+
+		for (World world : Bukkit.getWorlds())
+			for (Entity armorStand : world.getEntities().stream()
+					.filter(entity -> entity.getType() == EntityType.ARMOR_STAND).collect(Collectors.toList()))
+				armorStand.remove();
 	}
 
 	@EventHandler
@@ -47,7 +43,7 @@ public class HologramListener implements Listener {
 						hologram.getTouchHandler().onTouch(hologram, event.getPlayer(), TouchType.RIGHT);
 				}
 			}
-			
+
 			event.setCancelled(true);
 		}
 	}
@@ -59,6 +55,13 @@ public class HologramListener implements Listener {
 		if (!armorStand.isVisible()) {
 			e.setCancelled(true);
 		}
+	}
+
+	@EventHandler
+	public void onWorldLoad(WorldLoadEvent event) {
+		for (Entity armorStand : event.getWorld().getEntities().stream()
+				.filter(entity -> entity.getType() == EntityType.ARMOR_STAND).collect(Collectors.toList()))
+			armorStand.remove();
 	}
 
 	@EventHandler

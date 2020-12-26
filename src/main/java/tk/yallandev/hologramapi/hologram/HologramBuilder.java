@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tk.yallandev.hologramapi.controller.HologramController;
-import tk.yallandev.hologramapi.hologram.handler.TouchHandler;
-import tk.yallandev.hologramapi.hologram.handler.ViewHandler;
+import tk.yallandev.hologramapi.handler.TouchHandler;
+import tk.yallandev.hologramapi.handler.ViewHandler;
 import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
 
 /**
